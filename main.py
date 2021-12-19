@@ -21,10 +21,10 @@ def update_parameters(weight_1, bias_1, weight_2, bias_2, old_weight_1, old_bias
     copy_bias_1 = np.copy(bias_1)
     copy_weight_2 = np.copy(weight_2)
     copy_bias_2 = np.copy(bias_2)
-    weight_1 = np.add(old_weight_1 * momentum, weight_1 - learning_rate * dW1)
-    bias_1 = np.add(bias_1 - learning_rate * db1, old_bias_1 * momentum)
-    weight_2 = np.add(weight_2 - learning_rate * dW2, old_weight_2 * momentum)
-    bias_2 = np.add(bias_2 - learning_rate * db2, old_bias_2 * momentum)
+    weight_1 = old_weight_1 * momentum + weight_1 - learning_rate * dW1
+    bias_1 = bias_1 - learning_rate * db1 + old_bias_1 * momentum
+    weight_2 = weight_2 - learning_rate * dW2 + old_weight_2 * momentum
+    bias_2 = bias_2 - learning_rate * db2 + old_bias_2 * momentum
     return weight_1, bias_1, weight_2, bias_2, copy_weight_1, copy_bias_1, copy_weight_2, copy_bias_2
 
 
@@ -32,6 +32,7 @@ def relu(Z):
     return np.maximum(Z, 0)
 
 
+# bool representative is ether 0 or 1
 def relu_deriv(Z):
     return Z > 0
 
@@ -83,10 +84,10 @@ def gradient_descent_with_momentum(X, Y, epoch, learning_rate=0.1, momentum=0.9)
     weight_1, bias_1, weight_2, bias_2, old_weight_1, old_bias_1, old_weight_2, old_bias_2 = init_parameters()
     for i in range(epoch):
         # in order to implement momentum technique
-        weight_1_change = np.subtract(weight_1, old_weight_1)
-        bias_1_change = np.subtract(bias_1, old_bias_1)
-        weight_2_change = np.subtract(weight_2, old_weight_2)
-        bias_2_change = np.subtract(bias_2, old_bias_2)
+        weight_1_change = weight_1 - old_weight_1
+        bias_1_change = bias_1 - old_bias_1
+        weight_2_change = weight_2 - old_weight_2
+        bias_2_change = bias_2 - old_bias_2
 
         Z1, activation_in, Z2, activation_out = forward_propagation(weight_1, bias_1, weight_2, bias_2, X)
         dW1, db1, dW2, db2 = backward_propagation(Z1, activation_in, Z2, activation_out, weight_1, weight_2, X, Y)
